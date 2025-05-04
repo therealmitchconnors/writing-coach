@@ -4,84 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Daily Writing Practice</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
-      font-family: 'Georgia', serif;
-      background-color: #f9f9f9;
-      color: #333;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    header {
-      background-color: #4CAF50;
-      color: white;
-      padding: 1em;
-      width: 100%;
-      text-align: center;
-      font-size: 1.5em;
-    }
-    main {
-      width: 90%;
-      max-width: 800px;
-      background: white;
-      padding: 2em;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
     textarea {
-      width: 100%;
-      height: 200px;
-      margin-bottom: 1em;
-      padding: 1em;
-      font-size: 1em;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 0.75em 1.5em;
-      font-size: 1em;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    #feedback {
-      margin-top: 1em;
-      padding: 1em;
-      background: #f1f1f1;
-      border-left: 4px solid #4CAF50;
-      white-space: pre-wrap;
-      font-family: 'Courier New', monospace;
+      resize: none;
+      overflow: hidden;
     }
   </style>
 </head>
-<body>
-  <header>Daily Writing Practice</header>
-  <main>
-    <div id="prompt">Loading prompt...</div>
-    <textarea id="response" placeholder="Write your response here..."></textarea>
-    <button onclick="submitResponse()">Submit</button>
-    <div id="feedback"></div>
-  </main>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
+  <div id="secret-code-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+    <div class="bg-white text-black p-6 rounded-lg shadow-lg">
+      <h2 class="text-xl font-bold mb-4">Enter Secret Code</h2>
+      <input id="secret-code-input" type="text" placeholder="Secret Code" class="w-full p-2 border border-gray-300 rounded mb-4">
+      <button id="secret-code-submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Submit</button>
+    </div>
+  </div>
 
+  <header class="bg-gray-800 w-full text-center py-4 text-2xl font-bold">Daily Writing Practice</header>
+  <main class="w-11/12 max-w-2xl bg-gray-800 p-8 rounded-lg shadow-lg">
+    <div id="prompt" class="mb-4 text-lg">Loading prompt...</div>
+    <textarea id="response" placeholder="Write your response here..." class="w-full h-48 p-4 text-black rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="adjustHeight(this)"></textarea>
+    <button id="submit-button" onclick="submitResponse()" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">Submit</button>
+    <div id="feedback" class="mt-4 p-4 bg-gray-700 border-l-4 border-blue-500"></div>
+  </main>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
-    async function loadPrompt() {
-      const res = await fetch('/api/prompt');
-      const data = await res.json();
-      document.getElementById('prompt').textContent = data.prompt;
+    function adjustHeight(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
     }
 
     async function submitResponse() {
+      const button = document.getElementById('submit-button');
+      button.textContent = 'Generating feedback...';
+      button.disabled = true;
+
       const prompt = document.getElementById('prompt').textContent;
       const response = document.getElementById('response').value;
 
@@ -93,9 +51,47 @@
 
       const data = await res.json();
       document.getElementById('feedback').innerHTML = marked.parse(data.feedback);
+
+      // Add a download button after feedback is displayed
+      const downloadButton = document.createElement('button');
+      downloadButton.textContent = 'Download';
+      downloadButton.className = 'mt-4 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg';
+      downloadButton.onclick = () => {
+        const date = new Date().toISOString();
+        const prompt = document.getElementById('prompt').textContent;
+        const response = document.getElementById('response').value;
+        const feedback = document.getElementById('feedback').textContent;
+
+        const fileContent = `Date: ${date}\nPrompt: ${prompt}\nResponse: ${response}\nFeedback: ${feedback}`;
+        const blob = new Blob([fileContent], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `feedback_${date.replace(/:/g, '-')}.txt`;
+        link.click();
+      };
+
+      document.getElementById('feedback').appendChild(downloadButton);
+
+      button.textContent = 'Submit';
+      button.disabled = false;
+    }
+
+    async function loadPrompt() {
+      const res = await fetch('/api/prompt');
+      const data = await res.json();
+      document.getElementById('prompt').textContent = data.prompt;
     }
 
     loadPrompt();
+
+    document.getElementById('secret-code-submit').addEventListener('click', () => {
+      const secretCode = document.getElementById('secret-code-input').value;
+      if (secretCode === 'mitch') {
+        document.getElementById('secret-code-modal').style.display = 'none';
+      } else {
+        alert('Invalid secret code. Please try again.');
+      }
+    });
   </script>
 </body>
 </html>

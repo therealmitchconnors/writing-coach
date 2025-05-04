@@ -60,7 +60,7 @@ app.post('/api/submit', async (req, res) => {
             "content": [
                 {
                 "type": "input_text",
-                "text": "In the heart of an ancient forest, where the trees whisper secrets of old, a magnificent dragon emerges from the shadows. Its scales shimmer like polished emeralds, reflecting the dappled sunlight that filters through the dense canopy. This dragon, with eyes as deep and wise as the ocean, exudes an aura of both power and serenity.\nAs you approach, there is no sense of impending battle, but rather a feeling of mutual respect and curiosity. The dragon's breath, warm and fragrant like a summer breeze, carries the scent of wildflowers and pine. Its massive wings, when unfurled, create a gentle gust that rustles the leaves and sends a cascade of petals into the air.\nThis dragon is not a foe to be vanquished, but a guardian of the forest, a keeper of ancient wisdom. It lowers its head in a gesture of peace, inviting you to sit by its side and share stories of distant lands and forgotten times. In this enchanted moment, you realize that the dragon is a friend, a majestic being with whom you can forge an unbreakable bond."
+                "text": response
                 }
             ]
             }
@@ -83,7 +83,7 @@ app.post('/api/submit', async (req, res) => {
     //   max_tokens: 150
     // });
 
-    // const feedback = response.data.choices[0].text.trim();
+    const feedback = coachResponse.output_text.replace(/\n/g, '\n\n');
 
     // Save to file
     const logEntry = `Prompt: ${prompt}\nResponse: ${response}\nFeedback: ${coachResponse.output_text}\n\n`;
