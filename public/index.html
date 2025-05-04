@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Writing Practice</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background-color: #f9f9f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    header {
+      background-color: #4CAF50;
+      color: white;
+      padding: 1em;
+      width: 100%;
+      text-align: center;
+      font-size: 1.5em;
+    }
+    main {
+      width: 90%;
+      max-width: 800px;
+      background: white;
+      padding: 2em;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      margin-bottom: 1em;
+      padding: 1em;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 0.75em 1.5em;
+      font-size: 1em;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #feedback {
+      margin-top: 1em;
+      padding: 1em;
+      background: #f1f1f1;
+      border-left: 4px solid #4CAF50;
+      white-space: pre-wrap;
+      font-family: 'Courier New', monospace;
+    }
+  </style>
+</head>
+<body>
+  <header>Daily Writing Practice</header>
+  <main>
+    <div id="prompt">Loading prompt...</div>
+    <textarea id="response" placeholder="Write your response here..."></textarea>
+    <button onclick="submitResponse()">Submit</button>
+    <div id="feedback"></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    async function loadPrompt() {
+      const res = await fetch('/api/prompt');
+      const data = await res.json();
+      document.getElementById('prompt').textContent = data.prompt;
+    }
+
+    async function submitResponse() {
+      const prompt = document.getElementById('prompt').textContent;
+      const response = document.getElementById('response').value;
+
+      const res = await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, response })
+      });
+
+      const data = await res.json();
+      document.getElementById('feedback').innerHTML = marked.parse(data.feedback);
+    }
+
+    loadPrompt();
+  </script>
+</body>
+</html>
