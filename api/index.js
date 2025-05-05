@@ -20,7 +20,7 @@ app.use(express.static('public'));
 const prompts = require('../prompts.json');
 
 // Serve daily prompt
-app.get('/api/prompt', (req, res) => {
+app.get('/prompt', (req, res) => {
   const randomIndex = Math.floor(Math.random() * prompts.length);
   const dailyPrompt = prompts[randomIndex];
 //   const today = new Date().toISOString().split('T')[0];
@@ -29,7 +29,7 @@ app.get('/api/prompt', (req, res) => {
 });
 
 // Handle submission
-app.post('/api/submit', async (req, res) => {
+app.post('/submit', async (req, res) => {
   const { prompt, response } = req.body;
 
   try {

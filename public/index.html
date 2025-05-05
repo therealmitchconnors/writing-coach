@@ -43,7 +43,7 @@
       const prompt = document.getElementById('prompt').textContent;
       const response = document.getElementById('response').value;
 
-      const res = await fetch('/api/submit', {
+      const res = await fetch('/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt, response })
@@ -77,7 +77,7 @@
     }
 
     async function loadPrompt() {
-      const res = await fetch('/api/prompt');
+      const res = await fetch('/prompt');
       const data = await res.json();
       document.getElementById('prompt').textContent = data.prompt;
     }
