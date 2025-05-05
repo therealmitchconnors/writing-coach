@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 // Load prompts
-const prompts = require('./prompts.json');
+const prompts = require('../prompts.json');
 
 // Serve daily prompt
 app.get('/api/prompt', (req, res) => {
